@@ -1,0 +1,29 @@
+[package]
+name = "ffi_types"
+description = "C ABI compatible wrappers for cbindgen/bindgen."
+version = "0.0.1"
+edition = "2021"
+license = "BSD-2-Clause"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.dependencies]
+anyhow = "1"
+cbindgen = { version = "0.26.0", default-features = false }
+libc = { version = "0.2", default-features = false }
+static_assertions = "1"
+
+[dependencies]
+cbindgen = { workspace = true, optional = true }
+libc = { workspace = true, optional = true }
+static_assertions = { workspace = true }
+
+[build-dependencies]
+anyhow = { workspace = true }
+cbindgen = { workspace = true, optional = true }
+
+[features]
+default = ["cxx"]
+cxx = ["cbindgen", "libc"]
+vec = []
+__build_header = ["cbindgen"]  # This is not a user feature
