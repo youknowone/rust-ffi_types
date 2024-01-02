@@ -18,8 +18,11 @@ const CXX_WRAPPER_NAMES: &[&str] = &[
     "CBox",
     "COptionBox",
     // slices
+    "CSliceRef",
+    "CByteSliceRef",
     "CBoxedSlice",
     // strings
+    "CStrRef",
     "CBoxedStr",
     "CharStrRef",
 ];

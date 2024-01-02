@@ -1,7 +1,7 @@
 [package]
 name = "ffi_types"
 description = "C ABI compatible wrappers for cbindgen/bindgen."
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 license = "BSD-2-Clause"
 
@@ -27,3 +27,7 @@ default = ["cxx"]
 cxx = ["cbindgen", "libc"]
 vec = []
 __build_header = ["cbindgen"]  # This is not a user feature
+
+[lib]
+name = "ffi_types"
+crate-type = ["staticlib", "rlib"]

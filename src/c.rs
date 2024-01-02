@@ -14,7 +14,11 @@ type c_char = u8;
 pub type COptionBox<T> = crate::OptionBox<T>;
 pub type CBox<T> = COptionBox<T>;
 
+pub type CSliceRef<T> = crate::SliceRef<T>;
 pub type CBoxedSlice<T> = crate::BoxedSlice<T>;
+pub type CByteSliceRef = crate::ByteSliceRef;
+
+pub type CStrRef = crate::StrRef;
 
 /// not related to [`std::ffi::CStr`] or [`std::ffi::CString`]
 pub type CharStrRef = crate::SliceRef<c_char>;

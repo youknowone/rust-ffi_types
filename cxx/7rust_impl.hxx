@@ -1,8 +1,10 @@
+#pragma once
+
 
 //! This header is intended to be included in rust_types.hh file.
     
 
-namespace rust {
+namespace ffi_types {
 
 extern "C" {
 
@@ -12,4 +14,4 @@ void _rust_ffi_boxed_bytes_drop(ffi_types::CBoxedSlice<uint8_t> _slice);
 
 } // extern "C"
 
-} // namespace rust
+} // namespace ffi_types

@@ -10,8 +10,9 @@ fn crate_dir() -> anyhow::Result<String> {
 fn generate_impl() -> anyhow::Result<()> {
     let mut config = cbindgen::Config::default();
     config.language = cbindgen::Language::Cxx;
-    config.namespace = Some("rust".to_owned());
+    config.namespace = Some("ffi_types".to_owned());
     config.cpp_compat = true;
+    config.pragma_once = true;
     config.no_includes = true;
     config.after_includes = Some(
         r#"

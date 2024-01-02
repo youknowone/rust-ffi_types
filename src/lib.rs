@@ -10,8 +10,8 @@ mod str;
 pub use boxed::{Box, OptionBox};
 #[cfg(feature = "cxx")]
 pub use c::{
-    CBox, CBoxedSlice, CBoxedStr, COptionBox, CharStrRef, CXX_HEADER_CONTENT, CXX_HEADER_PATH,
-    CXX_INCLUDE_PATH,
+    CBox, CBoxedSlice, CBoxedStr, CByteSliceRef, COptionBox, CSliceRef, CStrRef, CharStrRef,
+    CXX_HEADER_CONTENT, CXX_HEADER_PATH, CXX_INCLUDE_PATH,
 };
 pub use convert::{AsFfiType, IntoFfiType, ToFfiType};
 pub use slice::{BoxedSlice, ByteSliceRef, MutSliceRef, SliceRef};

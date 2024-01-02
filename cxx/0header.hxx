@@ -77,3 +77,9 @@ template <typename T, usize N>
 using Array = std::array<T, N>;
 
 }  // namespace ffi_types
+
+#if _MSC_VER
+#define _COPY_DELETE default
+#else
+#define _COPY_DELETE delete
+#endif
