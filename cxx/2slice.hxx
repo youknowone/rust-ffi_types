@@ -11,6 +11,9 @@ using std::ranges::size;
 namespace ranges {
 template <typename C>
 auto data(C& x) noexcept {
+    auto begin = x.begin();
+    auto end = x.end();
+    if (begin == end) return nullptr;
     return &*x.begin();
 }
 
@@ -130,7 +133,7 @@ struct MutSliceRef : public _SliceInterface<T, MutSliceRef> {
     MutSliceRef(MutSliceRef&&) = default;
     explicit MutSliceRef(T* head, usize size) noexcept : _data(head), _size(size) {}
     template <class R>
-    MutSliceRef(SAFE_R range) : _data(ranges::data(range)), _size(static_cast<usize>(ranges::size(range))) {}
+    MutSliceRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(static_cast<usize>(ranges::size(range))) {}
 
     MutSliceRef& operator=(const MutSliceRef<T>&) = default;
     MutSliceRef& operator=(MutSliceRef<T>&&) = default;
@@ -163,7 +166,7 @@ struct SliceRef : public MutSliceRef<const T> {
     SliceRef(SliceRef&&) = default;
     explicit SliceRef(const T* head, usize size) noexcept : MutSliceRef<const T>(head, size) {}
     template <class R>
-    SliceRef(SAFE_R range) : MutSliceRef<const T>(range) {}
+    SliceRef(SAFE_R range) noexcept : MutSliceRef<const T>(range) {}
 
     SliceRef& operator=(const SliceRef<T>&) = default;
     SliceRef& operator=(SliceRef<T>&&) = default;
@@ -420,7 +423,8 @@ struct CharStrRef {
     CharStrRef& operator=(const CharStrRef&) = default;
     CharStrRef(const char* head, usize size) noexcept : _data(head), _size(size) {}
     template <class R>
-    CharStrRef(SAFE_R range) : _data(ranges::data(range)), _size(ranges::size(range)) {}
+    CharStrRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(ranges::size(range)) {}
+    CharStrRef(std::nullptr_t) noexcept : _data(nullptr), _size(0) {}
 
     const char* _data;
     usize _size;
