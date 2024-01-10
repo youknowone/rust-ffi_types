@@ -24,7 +24,9 @@ struct OptionBox {
 
     // destructor and helper
     ~OptionBox() noexcept {
-        if (this->get()) this->_drop();
+        if (this->get()) {
+            this->_drop();
+        }
     }
     void _drop() noexcept;
 
@@ -67,7 +69,9 @@ struct OptionBox {
         return ptr;
     }
     void reset(pointer p) noexcept {
-        if (this->get()) this->_drop();
+        if (this->get()) {
+            this->_drop();
+        }
         this->_ptr = p;
     }
 };

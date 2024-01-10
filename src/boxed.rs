@@ -18,7 +18,7 @@ impl<T> OptionBox<T> {
     #[inline(always)]
     pub fn new(boxed: Box<T>) -> Self {
         Self {
-            ptr: Box::into_raw(boxed)
+            ptr: Box::into_raw(boxed),
         }
     }
 
@@ -38,7 +38,7 @@ impl<T> OptionBox<T> {
     #[inline(always)]
     pub const fn none() -> Self {
         Self {
-            ptr: std::ptr::null_mut()
+            ptr: std::ptr::null_mut(),
         }
     }
 }

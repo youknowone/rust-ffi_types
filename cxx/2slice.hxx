@@ -13,8 +13,11 @@ template <typename C>
 auto data(C& x) noexcept {
     auto begin = x.begin();
     auto end = x.end();
-    if (begin == end) return nullptr;
-    return &*x.begin();
+    auto data = &*begin;
+    if (begin == end) {
+        data = nullptr;
+    }
+    return data;
 }
 
 template <typename C>
@@ -312,7 +315,9 @@ public:
     BoxedSlice(BoxedSlice<T>&&) = default;
     BoxedSlice(std::nullptr_t) noexcept : MutSliceRef<T>() {}
     ~BoxedSlice() noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
     }
     BoxedSlice<T>& operator=(BoxedSlice<T>&& b) noexcept {
         this->reset(b.release());
@@ -324,7 +329,9 @@ public:
     CBoxedSlice<T> into() noexcept;
 
     void reset(_SliceRange<T> s) noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
         this->_data = s._data;
         this->_size = s._size;
     }
@@ -574,7 +581,9 @@ public:
     BoxedStr(std::nullptr_t) noexcept : StrRef(nullptr) {}
 
     ~BoxedStr() noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
     }
 
     BoxedStr& operator=(BoxedStr&& b) noexcept {
@@ -585,7 +594,9 @@ public:
     void _drop() noexcept;
 
     void reset(_SliceRange<const char> s) noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
         this->_data = s._data;
         this->_size = s._size;
     }

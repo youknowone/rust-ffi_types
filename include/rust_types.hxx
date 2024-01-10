@@ -109,7 +109,9 @@ struct OptionBox {
 
     // destructor and helper
     ~OptionBox() noexcept {
-        if (this->get()) this->_drop();
+        if (this->get()) {
+            this->_drop();
+        }
     }
     void _drop() noexcept;
 
@@ -152,7 +154,9 @@ struct OptionBox {
         return ptr;
     }
     void reset(pointer p) noexcept {
-        if (this->get()) this->_drop();
+        if (this->get()) {
+            this->_drop();
+        }
         this->_ptr = p;
     }
 };
@@ -268,8 +272,11 @@ template <typename C>
 auto data(C& x) noexcept {
     auto begin = x.begin();
     auto end = x.end();
-    if (begin == end) return nullptr;
-    return &*x.begin();
+    auto data = &*begin;
+    if (begin == end) {
+        data = nullptr;
+    }
+    return data;
 }
 
 template <typename C>
@@ -567,7 +574,9 @@ public:
     BoxedSlice(BoxedSlice<T>&&) = default;
     BoxedSlice(std::nullptr_t) noexcept : MutSliceRef<T>() {}
     ~BoxedSlice() noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
     }
     BoxedSlice<T>& operator=(BoxedSlice<T>&& b) noexcept {
         this->reset(b.release());
@@ -579,7 +588,9 @@ public:
     CBoxedSlice<T> into() noexcept;
 
     void reset(_SliceRange<T> s) noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
         this->_data = s._data;
         this->_size = s._size;
     }
@@ -679,6 +690,7 @@ struct CharStrRef {
     CharStrRef(const char* head, usize size) noexcept : _data(head), _size(size) {}
     template <class R>
     CharStrRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(ranges::size(range)) {}
+    CharStrRef(std::nullptr_t) noexcept : _data(nullptr), _size(0) {}
 
     const char* _data;
     usize _size;
@@ -828,7 +840,9 @@ public:
     BoxedStr(std::nullptr_t) noexcept : StrRef(nullptr) {}
 
     ~BoxedStr() noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
     }
 
     BoxedStr& operator=(BoxedStr&& b) noexcept {
@@ -839,7 +853,9 @@ public:
     void _drop() noexcept;
 
     void reset(_SliceRange<const char> s) noexcept {
-        if (this->_size > 0) this->_drop();
+        if (this->_size > 0) {
+            this->_drop();
+        }
         this->_data = s._data;
         this->_size = s._size;
     }

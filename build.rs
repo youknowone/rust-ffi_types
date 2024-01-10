@@ -71,6 +71,12 @@ fn make_header() -> anyhow::Result<()> {
     generate_impl()?;
     concat_header()?;
 
+    cc::Build::new()
+        .std("c++17")
+        .file("cxx/test.cxx")
+        .cpp(true)
+        .compile("cxx_header_test");
+
     Ok(())
 }
 
