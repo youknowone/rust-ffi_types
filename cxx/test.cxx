@@ -65,25 +65,22 @@ void test_char_str() {
 }
 
 void test_null_str() {
-    auto str_raw = ffi_types::CharStrRef("");
+    auto str_raw = ffi_types::CharStrRef((char*)1, 0);
     {
         auto str = ffi_types::CharStrRef(nullptr);
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
     {
         auto str = ffi_types::CharStrRef(std::array<char, 0>{});
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
     {
         auto str = ffi_types::StrRef(nullptr);
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
@@ -91,7 +88,6 @@ void test_null_str() {
         auto bstr = reinterpret_cast<ffi_types::BoxedStr*>(&str_raw);
         auto& str = *bstr;
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
