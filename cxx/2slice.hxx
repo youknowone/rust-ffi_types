@@ -12,12 +12,23 @@ namespace ranges {
 template <typename C>
 auto data(C& x) noexcept {
     auto begin = x.begin();
-    auto end = x.end();
-    auto data = &*begin;
-    if (begin == end) {
-        data = nullptr;
+
+    using iterator_type = decltype(begin);
+    using pointer_type = decltype(&*begin);
+
+    if constexpr (std::is_same_v<iterator_type, pointer_type>) {
+        // same type
+        return begin;
+    } else if constexpr (sizeof(iterator_type) == sizeof(uintptr_t)) {
+        // likely to be a pointer
+        return *reinterpret_cast<pointer_type*>(&begin);
+    } else {
+        if (begin != x.end()) {
+            return &*begin;
+        } else {
+            return static_cast<pointer_type>(nullptr);
+        }
     }
-    return data;
 }
 
 template <typename C>
@@ -69,7 +80,11 @@ struct _SliceInterface {
     using const_pointer = const element_type*;
     using reference = element_type&;
     using const_reference = const element_type&;
+#if __cpp_lib_span
+    using iterator = typename std::span<element_type>::iterator;
+#else
     using iterator = pointer;
+#endif
     using reverse_iterator = std::reverse_iterator<iterator>;
 
     // observers
@@ -99,11 +114,17 @@ struct _SliceInterface {
     }
 
     // iterator
+#if __cpp_lib_span
+    iterator begin() const noexcept {
+        return span().begin();
+    }
+#else
     iterator begin() const noexcept {
         return data();
     }
+#endif
     iterator end() const noexcept {
-        return data() + size();
+        return begin() + size();
     }
     reverse_iterator rbegin() const noexcept {
         return reverse_iterator(end());
@@ -119,7 +140,7 @@ struct _SliceInterface {
 #if __cpp_lib_span
     /// Returns the slice as a `std::span`.
     std::span<element_type> span() const noexcept {
-        return std::span<T>(this->data, this->len);
+        return std::span<T>(data(), size());
     }
 #endif
 };
@@ -428,10 +449,12 @@ struct CharStrRef {
     CharStrRef() = _COPY_DELETE;
     CharStrRef(const CharStrRef&) = default;
     CharStrRef& operator=(const CharStrRef&) = default;
+    // #if !_MSC_VER
     CharStrRef(const char* head, usize size) noexcept : _data(head), _size(size) {}
     template <class R>
     CharStrRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(ranges::size(range)) {}
     CharStrRef(std::nullptr_t) noexcept : _data(nullptr), _size(0) {}
+    // #endif
 
     const char* _data;
     usize _size;
@@ -445,7 +468,7 @@ struct CharStrRef {
     using const_pointer = const element_type*;
     using reference = element_type&;
     using const_reference = const element_type&;
-    using iterator = pointer;
+    using iterator = typename std::string_view::iterator;
     using reverse_iterator = std::reverse_iterator<iterator>;
 
     // observers
@@ -476,10 +499,10 @@ struct CharStrRef {
 
     // iterator
     iterator begin() const noexcept {
-        return data();
+        return view().begin();
     }
     iterator end() const noexcept {
-        return data() + size();
+        return begin() + size();
     }
     reverse_iterator rbegin() const noexcept {
         return reverse_iterator(end());
@@ -495,7 +518,7 @@ struct CharStrRef {
 #if __cpp_lib_span
     /// Returns the slice as a `std::span`.
     std::span<element_type> span() const noexcept {
-        return std::span<T>(this->data, this->len);
+        return std::span<element_type>(data(), size());
     }
 #endif
 
@@ -536,12 +559,10 @@ static_assert(std::is_standard_layout<CharStrRef>::value);
 struct StrRef : public CharStrRef {
     StrRef() = delete;
     StrRef(const StrRef&) = default;
-    StrRef(StrRef&&) = default;
     StrRef(const BoxedStr&) noexcept;
     StrRef(std::nullptr_t) noexcept : CharStrRef(nullptr, 0) {}
 
     StrRef& operator=(const StrRef&) = default;
-    StrRef& operator=(StrRef&&) = default;
 };
 static_assert(std::is_trivially_copyable<StrRef>::value);
 static_assert(std::is_standard_layout<StrRef>::value);

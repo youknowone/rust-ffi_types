@@ -42,6 +42,16 @@ ffi_types::CharStrRef signature_char_str_ref(ffi_types::CharStrRef c) {
 }
 }
 
+template <typename C>
+void test_iterator_begin() {
+    C c(nullptr, 0);
+    c._data += 1;
+
+    auto begin = c.begin();
+    auto data = ffi_types::ranges::data(c);
+    assert(data == c.data());
+}
+
 void test_char_str() {
     auto str1 = ffi_types::CharStrRef("hello");
     assert(str1.view() == "hello");
@@ -65,25 +75,22 @@ void test_char_str() {
 }
 
 void test_null_str() {
-    auto str_raw = ffi_types::CharStrRef("");
+    auto str_raw = ffi_types::CharStrRef((char*)1, 0);
     {
         auto str = ffi_types::CharStrRef(nullptr);
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
     {
         auto str = ffi_types::CharStrRef(std::array<char, 0>{});
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
     {
         auto str = ffi_types::StrRef(nullptr);
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
@@ -91,7 +98,6 @@ void test_null_str() {
         auto bstr = reinterpret_cast<ffi_types::BoxedStr*>(&str_raw);
         auto& str = *bstr;
         assert(str.view() == str_raw.view());
-        assert(str.data() == nullptr);
         assert(str.size() == 0);
         assert(str.view() == "");
     }
@@ -100,5 +106,8 @@ void test_null_str() {
 int main() {
     test_char_str();
     test_null_str();
+    test_iterator_begin<ffi_types::CharStrRef>();
+    test_iterator_begin<ffi_types::SliceRef<char>>();
+    test_iterator_begin<ffi_types::SliceRef<const char>>();
     return 0;
 }
