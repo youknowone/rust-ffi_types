@@ -303,7 +303,7 @@ impl<T> SliceInner<T> {
     #[inline(always)]
     pub(crate) const fn empty() -> Self {
         Self {
-            ptr: std::ptr::null_mut(),
+            ptr: 1 as _,
             len: 0,
         }
     }
