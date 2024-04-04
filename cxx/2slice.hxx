@@ -333,7 +333,10 @@ class BoxedSlice : public MutSliceRef<T> {
 public:
     BoxedSlice() = delete;
     BoxedSlice(const BoxedSlice<T>&) = delete;
-    BoxedSlice(BoxedSlice<T>&&) = default;
+    BoxedSlice(BoxedSlice<T>&& s) noexcept : MutSliceRef<T>(s) {
+        s._data = nullptr;
+        s._size = 0;
+    }
     BoxedSlice(std::nullptr_t) noexcept : MutSliceRef<T>() {}
     ~BoxedSlice() noexcept {
         if (this->_size > 0) {
@@ -598,7 +601,10 @@ class BoxedStr : public StrRef {
 public:
     BoxedStr() = delete;
     BoxedStr(BoxedStr&) = delete;
-    BoxedStr(BoxedStr&&) = default;
+    BoxedStr(BoxedStr&& s) noexcept : StrRef(s) {
+        s._data = nullptr;
+        s._size = 0;
+    }
     BoxedStr(std::nullptr_t) noexcept : StrRef(nullptr) {}
 
     ~BoxedStr() noexcept {

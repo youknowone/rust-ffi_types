@@ -5,6 +5,8 @@
 #include "8cxx_impl.hxx"
 #include "9footer.hxx"
 
+void ffi_types::_rust_ffi_boxed_str_drop(ffi_types::CBoxedStr) {}
+
 template struct ffi_types::CBox<char>;
 template <>
 void ffi_types::OptionBox<char>::_drop() noexcept {}
@@ -103,9 +105,41 @@ void test_null_str() {
     }
 }
 
+void test_move_boxed_slice() {
+    const auto *buffer = "hello";
+    auto fake_boxed = ffi_types::BoxedSlice<char>(nullptr);
+    auto* forced_slice = reinterpret_cast<ffi_types::MutSliceRef<char>*>(&fake_boxed);
+    forced_slice->_data = const_cast<char*>(buffer);
+    forced_slice->_size = 5;
+    assert(fake_boxed[0] == 'h');
+    assert(fake_boxed.size() == 5);
+
+    auto moved_boxed = std::move(fake_boxed);
+    assert(fake_boxed.size() == 0);
+    assert(moved_boxed[0] == 'h');
+    assert(moved_boxed.size() == 5);
+}
+
+void test_move_boxed_str() {
+    const auto *buffer = "hello";
+    auto fake_boxed = ffi_types::BoxedStr(nullptr);
+    auto* forced_slice = reinterpret_cast<ffi_types::MutSliceRef<char>*>(&fake_boxed);
+    forced_slice->_data = const_cast<char*>(buffer);
+    forced_slice->_size = 5;
+    assert(fake_boxed[0] == 'h');
+    assert(fake_boxed.size() == 5);
+
+    auto moved_boxed = std::move(fake_boxed);
+    assert(fake_boxed.size() == 0);
+    assert(moved_boxed[0] == 'h');
+    assert(moved_boxed.size() == 5);
+}
+
 int main() {
     test_char_str();
     test_null_str();
+    test_move_boxed_slice();
+    test_move_boxed_str();
     test_iterator_begin<ffi_types::CharStrRef>();
     test_iterator_begin<ffi_types::SliceRef<char>>();
     test_iterator_begin<ffi_types::SliceRef<const char>>();
