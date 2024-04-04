@@ -130,6 +130,7 @@ void test_move_boxed_str() {
     assert(fake_boxed.size() == 5);
 
     auto moved_boxed = std::move(fake_boxed);
+    assert(fake_boxed.data() == reinterpret_cast<const char*>(1));
     assert(fake_boxed.size() == 0);
     assert(moved_boxed[0] == 'h');
     assert(moved_boxed.size() == 5);

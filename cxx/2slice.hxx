@@ -1,5 +1,7 @@
 namespace ffi_types {
 
+#define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(1)
+
 // C++ std::ranges compatibility layer until C++17.
 #if __cpp_lib_ranges
 namespace ranges {
@@ -152,7 +154,7 @@ struct MutSliceRef : public _SliceInterface<T, MutSliceRef> {
     T* _data;
     usize _size;
 
-    MutSliceRef() noexcept : _data(nullptr), _size(0) {}
+    MutSliceRef() noexcept : _data(EMPTY_SLICE_BEGIN(T)), _size(0) {}
     MutSliceRef(const MutSliceRef&) = default;
     MutSliceRef(MutSliceRef&&) = default;
     explicit MutSliceRef(T* head, usize size) noexcept : _data(head), _size(size) {}
@@ -334,7 +336,7 @@ public:
     BoxedSlice() = delete;
     BoxedSlice(const BoxedSlice<T>&) = delete;
     BoxedSlice(BoxedSlice<T>&& s) noexcept : MutSliceRef<T>(s) {
-        s._data = nullptr;
+        s._data = EMPTY_SLICE_BEGIN(T);
         s._size = 0;
     }
     BoxedSlice(std::nullptr_t) noexcept : MutSliceRef<T>() {}
@@ -362,7 +364,7 @@ public:
 
     _SliceRange<T> release() noexcept {
         const auto range = this->get();
-        this->_data = nullptr;
+        this->_data = EMPTY_SLICE_BEGIN(T);
         this->_size = 0;
         return range;
     }
@@ -435,7 +437,7 @@ struct [[nodiscard]] CBoxedSlice {
 
     _SliceRange<T> release() noexcept {
         const auto range = this->get();
-        this->_data = nullptr;
+        this->_data = EMPTY_SLICE_BEGIN(T);
         this->_size = 0;
         return range;
     }
@@ -456,7 +458,7 @@ struct CharStrRef {
     CharStrRef(const char* head, usize size) noexcept : _data(head), _size(size) {}
     template <class R>
     CharStrRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(ranges::size(range)) {}
-    CharStrRef(std::nullptr_t) noexcept : _data(nullptr), _size(0) {}
+    CharStrRef(std::nullptr_t) noexcept : _data(EMPTY_SLICE_BEGIN(const char)), _size(0) {}
     // #endif
 
     const char* _data;
@@ -563,7 +565,7 @@ struct StrRef : public CharStrRef {
     StrRef() = delete;
     StrRef(const StrRef&) = default;
     StrRef(const BoxedStr&) noexcept;
-    StrRef(std::nullptr_t) noexcept : CharStrRef(nullptr, 0) {}
+    StrRef(std::nullptr_t) noexcept : CharStrRef(EMPTY_SLICE_BEGIN(const char), 0) {}
 
     StrRef& operator=(const StrRef&) = default;
 };
@@ -602,7 +604,7 @@ public:
     BoxedStr() = delete;
     BoxedStr(BoxedStr&) = delete;
     BoxedStr(BoxedStr&& s) noexcept : StrRef(s) {
-        s._data = nullptr;
+        s._data = EMPTY_SLICE_BEGIN(const char);
         s._size = 0;
     }
     BoxedStr(std::nullptr_t) noexcept : StrRef(nullptr) {}
@@ -630,7 +632,7 @@ public:
 
     _SliceRange<const char> release() noexcept {
         const auto range = this->get();
-        this->_data = nullptr;
+        this->_data = EMPTY_SLICE_BEGIN(const char);
         this->_size = 0;
         return range;
     }
@@ -688,7 +690,7 @@ struct [[nodiscard]] CBoxedStr {
 
     _SliceRange<const char> release() noexcept {
         const auto range = _SliceRange<const char>{_data, _size};
-        this->_data = nullptr;
+        this->_data = EMPTY_SLICE_BEGIN(const char);
         this->_size = 0;
         return range;
     }
@@ -733,5 +735,6 @@ inline StrRef MutSliceRef<const uint8_t>::as_str_unchecked<const uint8_t>() cons
 }
 
 #undef SAFE_R
+#undef EMPTY_SLICE_BEGIN
 
 }  // namespace ffi_types
