@@ -3,7 +3,6 @@ mod boxed;
 mod c;
 #[cfg(feature = "cxx")]
 pub mod cbindgen;
-mod convert;
 mod slice;
 mod str;
 
@@ -13,7 +12,6 @@ pub use c::{
     CBox, CBoxedSlice, CBoxedStr, CByteSliceRef, COptionBox, CSliceRef, CStrRef, CharStrRef,
     CXX_HEADER_CONTENT, CXX_HEADER_PATH, CXX_INCLUDE_PATH,
 };
-pub use convert::{AsFfiType, IntoFfiType, ToFfiType};
 pub use slice::{BoxedSlice, ByteSliceRef, MutSliceRef, SliceRef};
 pub use str::{BoxedStr, StrRef};
 
