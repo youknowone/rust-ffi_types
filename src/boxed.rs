@@ -41,6 +41,11 @@ impl<T> OptionBox<T> {
             ptr: std::ptr::null_mut(),
         }
     }
+
+    #[inline]
+    pub fn as_ref(&self) -> Option<&T> {
+        unsafe { self.ptr.as_ref() }  // SAFETY: `ptr` is a value of a valid Box
+    }
 }
 
 impl<T> From<Box<T>> for OptionBox<T> {
