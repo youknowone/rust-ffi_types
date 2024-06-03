@@ -44,7 +44,7 @@ impl<T> OptionBox<T> {
 
     #[inline]
     pub fn as_ref(&self) -> Option<&T> {
-        unsafe { self.ptr.as_ref() }  // SAFETY: `ptr` is a value of a valid Box
+        unsafe { self.ptr.as_ref() } // SAFETY: `ptr` is a value of a valid Box
     }
 }
 
