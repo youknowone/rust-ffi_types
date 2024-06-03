@@ -27,8 +27,8 @@ impl CharStrRef {
     #[cfg(feature = "libc")]
     #[inline(always)]
     pub fn as_bytes(&self) -> &[u8] {
-        let ptr = self.as_ptr();
         let len = self.len();
+        let ptr = self.as_ptr();
         unsafe { std::slice::from_raw_parts(ptr as *const _, len) }
     }
     #[cfg(not(feature = "libc"))]
@@ -94,4 +94,21 @@ fn test_empty_slice() {
     // ensure dropping empty slice is no-op
     let empty = CBoxedSlice::<u8>::empty();
     drop(empty);
+}
+
+#[test]
+fn test_empty_char_str() {
+    // ensure dropping empty char str is no-op
+    let empty = CharStrRef::new(&[]);
+    let bytes = empty.as_bytes();
+    assert_eq!(bytes, b"");
+
+    let empty = CharStrRef {
+        0: SliceInner {
+            ptr: 1 as _,
+            len: 0,
+        },
+    };
+    let bytes = empty.as_bytes();
+    assert_eq!(bytes, b"");
 }
