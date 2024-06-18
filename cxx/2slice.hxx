@@ -2,6 +2,11 @@ namespace ffi_types {
 
 #define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(1)
 
+template<typename T>
+T* _wrap_null(T* ptr) {
+    return ptr ? ptr : reinterpret_cast<T*>(1);
+}
+
 // C++ std::ranges compatibility layer until C++17.
 #if __cpp_lib_ranges
 namespace ranges {
@@ -157,9 +162,9 @@ struct MutSliceRef : public _SliceInterface<T, MutSliceRef> {
     MutSliceRef() noexcept : _data(EMPTY_SLICE_BEGIN(T)), _size(0) {}
     MutSliceRef(const MutSliceRef&) = default;
     MutSliceRef(MutSliceRef&&) = default;
-    explicit MutSliceRef(T* head, usize size) noexcept : _data(head), _size(size) {}
+    explicit MutSliceRef(T* head, usize size) noexcept : _data(_wrap_null(head)), _size(size) {}
     template <class R>
-    MutSliceRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(static_cast<usize>(ranges::size(range))) {}
+    MutSliceRef(SAFE_R range) noexcept : _data(_wrap_null(ranges::data(range))), _size(static_cast<usize>(ranges::size(range))) {}
 
     MutSliceRef& operator=(const MutSliceRef<T>&) = default;
     MutSliceRef& operator=(MutSliceRef<T>&&) = default;
@@ -455,9 +460,9 @@ struct CharStrRef {
     CharStrRef(const CharStrRef&) = default;
     CharStrRef& operator=(const CharStrRef&) = default;
     // #if !_MSC_VER
-    CharStrRef(const char* head, usize size) noexcept : _data(head), _size(size) {}
+    CharStrRef(const char* head, usize size) noexcept : _data(_wrap_null(head)), _size(size) {}
     template <class R>
-    CharStrRef(SAFE_R range) noexcept : _data(ranges::data(range)), _size(ranges::size(range)) {}
+    CharStrRef(SAFE_R range) noexcept : _data(_wrap_null(ranges::data(range))), _size(ranges::size(range)) {}
     CharStrRef(std::nullptr_t) noexcept : _data(EMPTY_SLICE_BEGIN(const char)), _size(0) {}
     // #endif
 
