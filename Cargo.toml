@@ -4,6 +4,7 @@ description = "C ABI compatible wrappers for cbindgen/bindgen."
 version = "0.0.9"
 edition = "2021"
 license = "BSD-2-Clause"
+repository = "https://github.com/youknowone/rust-ffi_types"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
