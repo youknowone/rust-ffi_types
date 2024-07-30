@@ -44,6 +44,12 @@ ffi_types::CharStrRef signature_char_str_ref(ffi_types::CharStrRef c) {
 }
 }
 
+void test_box() {
+    char *x = nullptr;
+    ffi_types::Box<char> b = ffi_types::Box<char>(x + 50);
+    assert(b.release() == x + 50);
+}
+
 template <typename C>
 void test_iterator_begin() {
     C c(nullptr, 0);
@@ -137,6 +143,7 @@ void test_move_boxed_str() {
 }
 
 int main() {
+    test_box();
     test_char_str();
     test_null_str();
     test_move_boxed_slice();
