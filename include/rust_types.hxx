@@ -107,6 +107,8 @@ struct OptionBox {
     OptionBox(OptionBox&& b) noexcept : _ptr(b.release()) {}
     explicit OptionBox(std::nullptr_t) noexcept : _ptr(nullptr) {}
 
+    explicit OptionBox(pointer p) noexcept : _ptr(p) {}
+
     // destructor and helper
     ~OptionBox() noexcept {
         if (this->get()) {
@@ -180,7 +182,11 @@ static_assert(std::is_standard_layout<OptionBox<int>>::value);
 ///
 /// @warning The underlying memory must be allocated from Rust side.
 template <typename T>
-struct Box : public OptionBox<T> {};
+struct Box : public OptionBox<T> {
+    explicit Box(T* p) noexcept : OptionBox<T>(p) {
+        assert(p != nullptr);
+    }
+};
 
 /// C++ wrapper for Rust `Box<T>` with C ABI compatible layout.
 ///
