@@ -125,6 +125,18 @@ struct OptionBox {
     /// The value of `this` will be invalidated to null.
     CBox<T> into() noexcept;
 
+    /// Borrow as `CBox<T>`.
+    /// This is safe because CBox is a reference.
+    CBox<T>& as_c() noexcept {
+        return *reinterpret_cast<CBox<T>*>(this);
+    }
+
+    /// Borrow as `CBox<T>`.
+    /// This is safe because CBox is a reference.
+    const CBox<T>& as_c() const noexcept {
+        return *reinterpret_cast<const CBox<T>*>(this);
+    }
+
     // observers
     typename std::add_lvalue_reference<element_type>::type operator*() const {
         return *get();
@@ -617,6 +629,12 @@ public:
     void _drop() noexcept;
 
     CBoxedSlice<T> into() noexcept;
+    const CBoxedSlice<T>& as_c() const noexcept {
+        return *reinterpret_cast<const CBoxedSlice<T>*>(this);
+    }
+    CBoxedSlice<T>& as_c() noexcept {
+        return *reinterpret_cast<CBoxedSlice<T>*>(this);
+    }
 
     void reset(_SliceRange<T> s) noexcept {
         if (this->_size > 0) {

@@ -358,6 +358,12 @@ public:
     void _drop() noexcept;
 
     CBoxedSlice<T> into() noexcept;
+    const CBoxedSlice<T>& as_c() const noexcept {
+        return *reinterpret_cast<const CBoxedSlice<T>*>(this);
+    }
+    CBoxedSlice<T>& as_c() noexcept {
+        return *reinterpret_cast<CBoxedSlice<T>*>(this);
+    }
 
     void reset(_SliceRange<T> s) noexcept {
         if (this->_size > 0) {
