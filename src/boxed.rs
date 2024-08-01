@@ -66,6 +66,13 @@ impl<T> From<Option<Box<T>>> for OptionBox<T> {
     }
 }
 
+impl<T> Default for OptionBox<T> {
+    #[inline(always)]
+    fn default() -> Self {
+        Self::none()
+    }
+}
+
 // impl<T> std::convert::AsRef<Option<Box<T>>> for OptionBox<T> {
 //     #[inline(always)]
 //     fn as_ref(&self) -> &Option<Box<T>> {
