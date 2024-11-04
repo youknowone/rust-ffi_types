@@ -45,7 +45,7 @@ ffi_types::CharStrRef signature_char_str_ref(ffi_types::CharStrRef c) {
 }
 
 void test_box() {
-    char *x = nullptr;
+    char* x = nullptr;
     ffi_types::Box<char> b = ffi_types::Box<char>(x + 50);
     assert(b.release() == x + 50);
 }
@@ -112,7 +112,7 @@ void test_null_str() {
 }
 
 void test_move_boxed_slice() {
-    const auto *buffer = "hello";
+    const auto* buffer = "hello";
     auto fake_boxed = ffi_types::BoxedSlice<char>(nullptr);
     auto* forced_slice = reinterpret_cast<ffi_types::MutSliceRef<char>*>(&fake_boxed);
     forced_slice->_data = const_cast<char*>(buffer);
@@ -127,7 +127,7 @@ void test_move_boxed_slice() {
 }
 
 void test_move_boxed_str() {
-    const auto *buffer = "hello";
+    const auto* buffer = "hello";
     auto fake_boxed = ffi_types::BoxedStr(nullptr);
     auto* forced_slice = reinterpret_cast<ffi_types::MutSliceRef<char>*>(&fake_boxed);
     forced_slice->_data = const_cast<char*>(buffer);

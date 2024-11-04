@@ -2,7 +2,7 @@ namespace ffi_types {
 
 #define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(1)
 
-template<typename T>
+template <typename T>
 T* _wrap_null(T* ptr) {
     return ptr ? ptr : reinterpret_cast<T*>(1);
 }
@@ -164,7 +164,8 @@ struct MutSliceRef : public _SliceInterface<T, MutSliceRef> {
     MutSliceRef(MutSliceRef&&) = default;
     explicit MutSliceRef(T* head, usize size) noexcept : _data(_wrap_null(head)), _size(size) {}
     template <class R>
-    MutSliceRef(SAFE_R range) noexcept : _data(_wrap_null(ranges::data(range))), _size(static_cast<usize>(ranges::size(range))) {}
+    MutSliceRef(SAFE_R range) noexcept
+        : _data(_wrap_null(ranges::data(range))), _size(static_cast<usize>(ranges::size(range))) {}
 
     MutSliceRef& operator=(const MutSliceRef<T>&) = default;
     MutSliceRef& operator=(MutSliceRef<T>&&) = default;
