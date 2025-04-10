@@ -14,6 +14,16 @@ static_assertions::assert_eq_size!(OptionBox<u8>, *const u8);
 static_assertions::assert_eq_size!(OptionBox<u8>, Box<u8>);
 static_assertions::assert_eq_size!(OptionBox<u8>, Option<Box<u8>>);
 
+impl<T> std::fmt::Debug for OptionBox<T>
+where
+    T: 'static + std::fmt::Debug,
+{
+    #[inline(always)]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        unsafe { self.ptr.as_ref().fmt(f) }
+    }
+}
+
 impl<T> OptionBox<T> {
     #[inline(always)]
     pub fn new(boxed: Box<T>) -> Self {

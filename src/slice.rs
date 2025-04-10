@@ -1,4 +1,5 @@
 /// Rust wrapper for &[T].
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct SliceRef<T: 'static>(pub(crate) SliceInner<T>);
 static_assertions::assert_eq_size!(SliceRef<u8>, &[u8]);
@@ -8,6 +9,7 @@ static_assertions::assert_eq_size!(SliceRef<u8>, &[u8]);
 pub type ByteSliceRef = SliceRef<u8>;
 
 /// Rust wrapper for &mut [u8].
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct MutSliceRef<T: 'static>(SliceInner<T>);
 static_assertions::assert_eq_size!(MutSliceRef<u8>, &[u8]);
@@ -15,6 +17,7 @@ static_assertions::assert_eq_size!(MutSliceRef<u8>, &[u8]);
 /// Rust wrapper for Box<[T]>.
 ///
 /// Since boxed types are only created from Rust side, the value is expected to be valid under safe operations.
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct BoxedSlice<T: 'static>(pub(crate) SliceInner<T>);
 static_assertions::assert_eq_size!(BoxedSlice<u8>, Box<[u8]>);
@@ -298,6 +301,16 @@ impl<T> Clone for SliceInner<T> {
 }
 
 impl<T> Copy for SliceInner<T> {}
+
+impl<T> std::fmt::Debug for SliceInner<T>
+where
+    T: std::fmt::Debug + 'static,
+{
+    #[inline(always)]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        unsafe { self.union().slice.fmt(f) }
+    }
+}
 
 impl<T> SliceInner<T> {
     #[inline(always)]
