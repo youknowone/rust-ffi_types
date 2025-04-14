@@ -189,4 +189,49 @@ inline void OptionBox<void>::_drop() noexcept {
     assert("void box doesn't support drop" && false);
 }
 
+/// C++ wrapper for Rust trait object reference `&dyn T`.
+///
+/// Since C++ cannot represent `dyn T` with associated traits, the specific
+/// trait type information is erased.
+/// Allows copying but not moving by default C++ rules for references.
+struct DynRef {
+    void* _ptr;
+    void* _vtable;
+
+    // only copy constructors
+    DynRef() = delete;
+    DynRef(DynRef&) = default;
+    DynRef(DynRef&&) = default;
+};
+
+/// C++ wrapper for Rust mutable trait object `&mut dyn T`.
+///
+/// Since C++ cannot represent `dyn T` with associated traits, the specific
+/// trait type information is erased.
+/// Allows moving but not copying, mirroring Rust's `&mut` exclusivity rules.
+struct MutDynRef {
+    void* _ptr;
+    void* _vtable;
+
+    // only move constructors
+    MutDynRef() = delete;
+    MutDynRef(MutDynRef&) = delete;
+    MutDynRef(MutDynRef&&) = default;
+};
+
+/// C++ wrapper for Rust owned trait object like `Box<dyn T>`, `Rc<dyn T>`, etc.
+///
+/// Since C++ cannot represent `dyn T` with proper traits, the type is erased and only can be used as a reference or a
+/// placeholder.
+struct DynOwned {
+    void* _ptr;
+    void* _vtable;
+
+    // no constructor no destructor
+    DynOwned() = delete;
+    DynOwned(DynOwned&) = delete;
+    DynOwned(DynOwned&&) = delete;
+    ~DynOwned() = delete;
+};
+
 }  // namespace ffi_types

@@ -24,6 +24,31 @@ where
     }
 }
 
+impl<T> Clone for OptionBox<T>
+where
+    T: 'static + Clone,
+{
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        if self.ptr.is_null() {
+            return Self::none();
+        }
+        let borrowed_box = unsafe { Box::from_raw(self.ptr) };
+        let cloned = borrowed_box.clone();
+        std::mem::forget(borrowed_box);
+        cloned.into()
+    }
+}
+
+impl<T> Drop for OptionBox<T> {
+    #[inline(always)]
+    fn drop(&mut self) {
+        if !self.ptr.is_null() {
+            drop(unsafe { Box::from_raw(self.ptr) });
+        }
+    }
+}
+
 impl<T> OptionBox<T> {
     #[inline(always)]
     pub fn new(boxed: Box<T>) -> Self {

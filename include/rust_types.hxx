@@ -274,12 +274,57 @@ inline void OptionBox<void>::_drop() noexcept {
     assert("void box doesn't support drop" && false);
 }
 
+/// C++ wrapper for Rust trait object reference `&dyn T`.
+///
+/// Since C++ cannot represent `dyn T` with associated traits, the specific
+/// trait type information is erased.
+/// Allows copying but not moving by default C++ rules for references.
+struct DynRef {
+    void* _ptr;
+    void* _vtable;
+
+    // only copy constructors
+    DynRef() = delete;
+    DynRef(DynRef&) = default;
+    DynRef(DynRef&&) = default;
+};
+
+/// C++ wrapper for Rust mutable trait object `&mut dyn T`.
+///
+/// Since C++ cannot represent `dyn T` with associated traits, the specific
+/// trait type information is erased.
+/// Allows moving but not copying, mirroring Rust's `&mut` exclusivity rules.
+struct MutDynRef {
+    void* _ptr;
+    void* _vtable;
+
+    // only move constructors
+    MutDynRef() = delete;
+    MutDynRef(MutDynRef&) = delete;
+    MutDynRef(MutDynRef&&) = default;
+};
+
+/// C++ wrapper for Rust owned trait object like `Box<dyn T>`, `Rc<dyn T>`, etc.
+///
+/// Since C++ cannot represent `dyn T` with proper traits, the type is erased and only can be used as a reference or a
+/// placeholder.
+struct DynOwned {
+    void* _ptr;
+    void* _vtable;
+
+    // no constructor no destructor
+    DynOwned() = delete;
+    DynOwned(DynOwned&) = delete;
+    DynOwned(DynOwned&&) = delete;
+    ~DynOwned() = delete;
+};
+
 }  // namespace ffi_types
 namespace ffi_types {
 
 #define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(1)
 
-template<typename T>
+template <typename T>
 T* _wrap_null(T* ptr) {
     return ptr ? ptr : reinterpret_cast<T*>(1);
 }
@@ -441,7 +486,8 @@ struct MutSliceRef : public _SliceInterface<T, MutSliceRef> {
     MutSliceRef(MutSliceRef&&) = default;
     explicit MutSliceRef(T* head, usize size) noexcept : _data(_wrap_null(head)), _size(size) {}
     template <class R>
-    MutSliceRef(SAFE_R range) noexcept : _data(_wrap_null(ranges::data(range))), _size(static_cast<usize>(ranges::size(range))) {}
+    MutSliceRef(SAFE_R range) noexcept
+        : _data(_wrap_null(ranges::data(range))), _size(static_cast<usize>(ranges::size(range))) {}
 
     MutSliceRef& operator=(const MutSliceRef<T>&) = default;
     MutSliceRef& operator=(MutSliceRef<T>&&) = default;
@@ -1040,9 +1086,9 @@ void _rust_ffi_boxed_str_drop(ffi_types::CBoxedStr _string);
 
 void _rust_ffi_boxed_bytes_drop(ffi_types::CBoxedSlice<uint8_t> _slice);
 
-} // extern "C"
+}  // extern "C"
 
-} // namespace ffi_types
+}  // namespace ffi_types
 namespace ffi_types {
 
 inline void BoxedStr::_drop() noexcept {
