@@ -23,6 +23,16 @@ pub type CStrRef = crate::StrRef;
 /// not related to [`std::ffi::CStr`] or [`std::ffi::CString`]
 pub type CharStrRef = crate::SliceRef<c_char>;
 
+impl From<crate::StrRef> for CharStrRef {
+    #[inline(always)]
+    fn from(s: crate::StrRef) -> Self {
+        Self(SliceInner {
+            ptr: s.0.ptr as *mut c_char,
+            len: s.0.len,
+        })
+    }
+}
+
 impl CharStrRef {
     #[cfg(feature = "libc")]
     #[inline(always)]
