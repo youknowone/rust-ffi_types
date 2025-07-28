@@ -85,10 +85,10 @@ pub type CBoxedStr = crate::BoxedStr;
 pub mod ffi {
     use super::*;
 
-    #[export_name = "_rust_ffi_boxed_str_drop"]
+    #[unsafe(export_name = "_rust_ffi_boxed_str_drop")]
     pub unsafe extern "C" fn boxed_str_drop(_string: CBoxedStr) {}
 
-    #[export_name = "_rust_ffi_boxed_bytes_drop"]
+    #[unsafe(export_name = "_rust_ffi_boxed_bytes_drop")]
     pub unsafe extern "C" fn boxed_bytes_drop(_slice: CBoxedSlice<u8>) {}
 }
 

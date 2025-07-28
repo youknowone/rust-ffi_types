@@ -1,8 +1,8 @@
 [package]
 name = "ffi_types"
 description = "C ABI compatible wrappers for cbindgen/bindgen."
-version = "0.0.15"
-edition = "2021"
+version = "0.0.16"
+edition = "2024"
 license = "BSD-2-Clause"
 repository = "https://github.com/youknowone/rust-ffi_types"
 

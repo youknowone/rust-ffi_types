@@ -41,7 +41,7 @@ impl StrRef {
     /// The returned object must not outlive the given slice.
     #[inline(always)]
     pub unsafe fn new_unbound(value: &'_ str) -> Self {
-        Self::new(crate::into_static(value))
+        Self::new(unsafe { crate::into_static(value) })
     }
 
     #[inline(always)]

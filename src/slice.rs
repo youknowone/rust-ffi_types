@@ -46,7 +46,7 @@ impl<T> SliceRef<T> {
     /// The returned object must not outlive the given slice.
     #[inline(always)]
     pub unsafe fn new_unbound(slice: &'_ [T]) -> Self {
-        Self::new(crate::into_static(slice))
+        Self::new(unsafe { crate::into_static(slice) })
     }
 
     /// Inverse of [`SliceRef::new`].
@@ -109,7 +109,7 @@ impl<T> MutSliceRef<T> {
     /// The returned object must not outlive the given slice.
     #[inline(always)]
     pub unsafe fn new_unbound(slice: &'_ mut [T]) -> Self {
-        Self::new(crate::into_static_mut(slice))
+        Self::new(unsafe { crate::into_static_mut(slice) })
     }
 
     /// Inverse of [`MutSliceRef::new`].
