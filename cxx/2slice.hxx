@@ -394,6 +394,10 @@ public:
 static_assert(sizeof(usize) * 2 == sizeof(BoxedSlice<int>));
 static_assert(std::is_standard_layout<BoxedSlice<usize>>::value);
 
+/// C++ counterpart of `Box<[u8]>` as alias for `BoxedSlice<uint8_t>`.
+/// This alias is useful to pass `Box<[u8]>` in cbindgen without configuration and boilerplate.
+using BoxedByteSlice = BoxedSlice<uint8_t>;
+
 /// C++ wrapper for a boxed slice with C ABI compatible layout.
 ///
 /// @warning This type does *NOT* implement a safe destructor.
@@ -456,6 +460,63 @@ struct [[nodiscard]] CBoxedSlice {
 };
 static_assert(std::is_trivial<CBoxedSlice<int>>::value);
 static_assert(std::is_standard_layout<CBoxedSlice<int>>::value);
+
+
+// Alias is not a C type in MSVC, so this line doesn't work.
+// ```c++
+// using CBoxedByteSlice = CBoxedSlice<uint8_t>;
+// ```
+struct CBoxedByteSlice {
+    CBoxedByteSlice() = _COPY_DELETE;
+    CBoxedByteSlice(const CBoxedByteSlice&) = default;
+    CBoxedByteSlice& operator=(const CBoxedByteSlice&) = default;
+
+#if _MSC_VER
+    /// Creates a `BoxedByteSlice` from a `BoxedByteSlice`.
+    /// This is a workaround for MSVC constructor limitation.
+    static CBoxedByteSlice from(BoxedByteSlice&& boxed) noexcept {
+        CBoxedByteSlice s;
+        s._data = boxed._data;
+        s._size = boxed._size;
+        return s;
+    }
+#else
+    CBoxedByteSlice(BoxedByteSlice&& boxed) noexcept {
+        this->_data = boxed._data;
+        this->_size = boxed._size;
+    }
+    /// Creates a `CBoxedByteSlice` from a `BoxedByteSlice`.
+    /// This is a workaround for MSVC constructor limitation.
+    static CBoxedByteSlice from(BoxedByteSlice&& boxed) noexcept {
+        return CBoxedByteSlice(std::move(boxed));
+    }
+#endif
+
+    uint8_t* _data;
+    usize _size;
+
+    BoxedByteSlice operator()() noexcept {
+        auto slice = BoxedByteSlice(nullptr);
+        auto r = this->release();
+        slice._data = r._data;
+        slice._size = r._size;
+        return slice;
+    }
+
+    _SliceRange<uint8_t> get() const noexcept {
+        return {this->_data, this->_size};
+    }
+
+    _SliceRange<uint8_t> release() noexcept {
+        const auto range = this->get();
+        this->_data = EMPTY_SLICE_BEGIN(uint8_t);
+        this->_size = 0;
+        return range;
+    }
+};
+static_assert(std::is_trivial<CBoxedByteSlice>::value);
+static_assert(std::is_standard_layout<CBoxedByteSlice>::value);
+
 
 /// C++ unsafe counterpart of Rust `&str`.
 ///

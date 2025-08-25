@@ -20,7 +20,14 @@ fn generate_impl() -> anyhow::Result<()> {
     "#
         .to_owned(),
     );
-    for name in &["CBoxedStr", "CBoxedSlice", "CBox", "COptionBox", "SliceRef"] {
+    for name in &[
+        "CBoxedStr",
+        "CBoxedSlice",
+        "CBoxedByteSlice",
+        "CBox",
+        "COptionBox",
+        "SliceRef",
+    ] {
         config.export.exclude.push(name.to_string());
         config
             .export

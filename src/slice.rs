@@ -8,6 +8,10 @@ static_assertions::assert_eq_size!(SliceRef<u8>, &[u8]);
 /// Though this alias is not very useful in Rust side, it gives a simple aliased buffer type for cbindgen.
 pub type ByteSliceRef = SliceRef<u8>;
 
+/// Rust wrapper for Box<[u8]>
+/// Though this alias is not very useful in Rust side, it gives a simple aliased buffer type for cbindgen.
+pub type BoxedByteSlice = BoxedSlice<u8>;
+
 /// Rust wrapper for &mut [u8].
 #[derive(Debug)]
 #[repr(transparent)]
