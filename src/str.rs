@@ -7,6 +7,7 @@ use crate::slice::SliceInner;
 ///
 /// To get strings from outside, use [`CharStrRef`].
 #[repr(C)]
+#[derive(Debug)]
 pub struct StrRef(pub(crate) SliceInner<u8>);
 static_assertions::assert_eq_size!(StrRef, &str);
 
@@ -14,6 +15,7 @@ static_assertions::assert_eq_size!(StrRef, &str);
 ///
 /// Since boxed types are only created from Rust side, the value is expected to be valid under safe operations.
 #[repr(C)]
+#[derive(Debug)]
 pub struct BoxedStr(SliceInner<u8>);
 static_assertions::assert_eq_size!(BoxedStr, std::boxed::Box<str>);
 
