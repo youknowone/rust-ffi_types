@@ -9,10 +9,10 @@ mod str;
 pub use boxed::{Box, OptionBox};
 #[cfg(feature = "cxx")]
 pub use c::{
-    CBox, CBoxedSlice, CBoxedStr, CByteSliceRef, COptionBox, CSliceRef, CStrRef,
+    CBox, CBoxedByteSlice, CBoxedSlice, CBoxedStr, CByteSliceRef, COptionBox, CSliceRef, CStrRef,
     CXX_HEADER_CONTENT, CXX_HEADER_PATH, CXX_INCLUDE_PATH, CharStrRef,
 };
-pub use slice::{BoxedSlice, ByteSliceRef, MutSliceRef, SliceRef};
+pub use slice::{BoxedByteSlice, BoxedSlice, ByteSliceRef, MutSliceRef, SliceRef};
 pub use str::{BoxedStr, StrRef};
 
 pub type Array<T, const N: usize> = [T; N];

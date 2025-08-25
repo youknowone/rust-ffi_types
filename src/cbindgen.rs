@@ -9,6 +9,7 @@ const CXX_TYPE_NAMES: &[&str] = &[
     "MutSliceRef",
     "BoxedSlice",
     "ByteSliceRef",
+    "BoxedByteSlice",
     // strings
     "StrRef",
     "BoxedStr",
@@ -21,6 +22,7 @@ const CXX_WRAPPER_NAMES: &[&str] = &[
     "CSliceRef",
     "CByteSliceRef",
     "CBoxedSlice",
+    "CBoxedByteSlice",
     // strings
     "CStrRef",
     "CBoxedStr",
