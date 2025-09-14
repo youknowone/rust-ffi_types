@@ -1,7 +1,7 @@
 /// A type alias for `std::boxed::Box<T>`.
 ///
 /// `Box` doesn't require a wrapper because it is guaranteed to be layout as a pointer.
-pub type Box<T> = std::boxed::Box<T>;
+pub type Box<T> = alloc::boxed::Box<T>;
 
 /// A type alias for `Option<Box<T>>`.
 ///
@@ -14,12 +14,12 @@ static_assertions::assert_eq_size!(OptionBox<u8>, *const u8);
 static_assertions::assert_eq_size!(OptionBox<u8>, Box<u8>);
 static_assertions::assert_eq_size!(OptionBox<u8>, Option<Box<u8>>);
 
-impl<T> std::fmt::Debug for OptionBox<T>
+impl<T> core::fmt::Debug for OptionBox<T>
 where
-    T: 'static + std::fmt::Debug,
+    T: 'static + core::fmt::Debug,
 {
     #[inline(always)]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         unsafe { self.ptr.as_ref().fmt(f) }
     }
 }
@@ -35,7 +35,7 @@ where
         }
         let borrowed_box = unsafe { Box::from_raw(self.ptr) };
         let cloned = borrowed_box.clone();
-        std::mem::forget(borrowed_box);
+        core::mem::forget(borrowed_box);
         cloned.into()
     }
 }
@@ -73,7 +73,7 @@ impl<T> OptionBox<T> {
     #[inline(always)]
     pub const fn none() -> Self {
         Self {
-            ptr: std::ptr::null_mut(),
+            ptr: core::ptr::null_mut(),
         }
     }
 
@@ -108,21 +108,21 @@ impl<T> Default for OptionBox<T> {
     }
 }
 
-// impl<T> std::convert::AsRef<Option<Box<T>>> for OptionBox<T> {
+// impl<T> core::convert::AsRef<Option<Box<T>>> for OptionBox<T> {
 //     #[inline(always)]
 //     fn as_ref(&self) -> &Option<Box<T>> {
 //         &self.0
 //     }
 // }
 
-// impl<T> std::borrow::Borrow<Option<Box<T>>> for OptionBox<T> {
+// impl<T> core::borrow::Borrow<Option<Box<T>>> for OptionBox<T> {
 //     #[inline(always)]
 //     fn borrow(&self) -> &Option<Box<T>> {
 //         self.as_ref()
 //     }
 // }
 
-// impl<T> std::ops::Deref for OptionBox<T> {
+// impl<T> core::ops::Deref for OptionBox<T> {
 //     type Target = Option<Box<T>>;
 
 //     #[inline(always)]

@@ -17,7 +17,7 @@ static_assertions::assert_eq_size!(StrRef, &str);
 #[repr(C)]
 #[derive(Debug)]
 pub struct BoxedStr(SliceInner<u8>);
-static_assertions::assert_eq_size!(BoxedStr, std::boxed::Box<str>);
+static_assertions::assert_eq_size!(BoxedStr, alloc::boxed::Box<str>);
 
 impl Clone for StrRef {
     #[inline(always)]
@@ -73,21 +73,21 @@ impl From<StrRef> for &'static str {
     }
 }
 
-impl std::convert::AsRef<str> for StrRef {
+impl core::convert::AsRef<str> for StrRef {
     #[inline(always)]
     fn as_ref(&self) -> &'static str {
         self.into_str()
     }
 }
 
-impl std::borrow::Borrow<str> for StrRef {
+impl core::borrow::Borrow<str> for StrRef {
     #[inline(always)]
     fn borrow(&self) -> &str {
         self.as_ref()
     }
 }
 
-impl std::ops::Deref for StrRef {
+impl core::ops::Deref for StrRef {
     type Target = str;
 
     #[inline(always)]
@@ -99,36 +99,36 @@ impl std::ops::Deref for StrRef {
 impl BoxedStr {
     /// Create a new wrapper for a `Box<str>`.
     #[inline(always)]
-    pub fn new(value: Box<str>) -> Self {
+    pub fn new(value: alloc::boxed::Box<str>) -> Self {
         let inner = SliceInner::from_str(&value);
-        let raw = Box::into_raw(value);
+        let raw = alloc::boxed::Box::into_raw(value);
         assert_eq!(inner.ptr, raw as *mut _);
         Self(inner)
     }
 
     /// Inverse of [`BoxedStr::new`].
     #[inline(always)]
-    pub fn into_boxed_str(self) -> Box<str> {
+    pub fn into_boxed_str(self) -> alloc::boxed::Box<str> {
         let union = self.0.str_union();
-        std::mem::ManuallyDrop::into_inner(unsafe { union.boxed })
+        core::mem::ManuallyDrop::into_inner(unsafe { union.boxed })
     }
 }
 
-impl From<std::boxed::Box<str>> for BoxedStr {
+impl From<alloc::boxed::Box<str>> for BoxedStr {
     #[inline(always)]
-    fn from(value: std::boxed::Box<str>) -> Self {
+    fn from(value: alloc::boxed::Box<str>) -> Self {
         Self::new(value)
     }
 }
 
-impl From<BoxedStr> for std::boxed::Box<str> {
+impl From<BoxedStr> for alloc::boxed::Box<str> {
     #[inline(always)]
     fn from(value: BoxedStr) -> Self {
         value.into_boxed_str()
     }
 }
 
-impl std::convert::AsRef<str> for BoxedStr {
+impl core::convert::AsRef<str> for BoxedStr {
     #[inline(always)]
     fn as_ref(&self) -> &str {
         let union = self.0.str_union();
@@ -136,21 +136,21 @@ impl std::convert::AsRef<str> for BoxedStr {
     }
 }
 
-impl std::convert::AsRef<Box<str>> for BoxedStr {
+impl core::convert::AsRef<alloc::boxed::Box<str>> for BoxedStr {
     #[inline(always)]
-    fn as_ref(&self) -> &Box<str> {
-        unsafe { &*(&self.0 as *const SliceInner<u8> as *const Box<str>) }
+    fn as_ref(&self) -> &alloc::boxed::Box<str> {
+        unsafe { &*(&self.0 as *const SliceInner<u8> as *const alloc::boxed::Box<str>) }
     }
 }
 
-impl std::borrow::Borrow<str> for BoxedStr {
+impl core::borrow::Borrow<str> for BoxedStr {
     #[inline(always)]
     fn borrow(&self) -> &str {
         self.as_ref()
     }
 }
 
-impl std::ops::Deref for BoxedStr {
+impl core::ops::Deref for BoxedStr {
     type Target = str;
 
     #[inline(always)]
@@ -162,7 +162,7 @@ impl std::ops::Deref for BoxedStr {
 pub(crate) union StrUnion {
     inner: SliceInner<u8>,
     str: &'static str,
-    boxed: std::mem::ManuallyDrop<std::boxed::Box<str>>,
+    boxed: core::mem::ManuallyDrop<alloc::boxed::Box<str>>,
 }
 static_assertions::assert_eq_size!(SliceInner<u8>, StrUnion);
 
