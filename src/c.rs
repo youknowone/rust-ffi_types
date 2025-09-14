@@ -40,7 +40,7 @@ impl CharStrRef {
     pub fn as_bytes(&self) -> &[u8] {
         let len = self.len();
         let ptr = self.as_ptr();
-        unsafe { std::slice::from_raw_parts(ptr as *const _, len) }
+        unsafe { core::slice::from_raw_parts(ptr as *const _, len) }
     }
     #[cfg(not(feature = "libc"))]
     #[inline(always)]
@@ -49,8 +49,8 @@ impl CharStrRef {
     }
 
     #[inline(always)]
-    pub fn to_str(&self) -> Result<&str, std::str::Utf8Error> {
-        std::str::from_utf8(self.as_bytes())
+    pub fn to_str(&self) -> Result<&str, core::str::Utf8Error> {
+        core::str::from_utf8(self.as_bytes())
     }
 
     #[inline(always)]
@@ -75,8 +75,8 @@ impl CharStrRef {
     }
 
     #[inline(always)]
-    pub fn into_rust(self) -> Result<crate::StrRef, std::str::Utf8Error> {
-        std::str::from_utf8(self.as_bytes())?;
+    pub fn into_rust(self) -> Result<crate::StrRef, core::str::Utf8Error> {
+        core::str::from_utf8(self.as_bytes())?;
         Ok(unsafe { self.into_rust_unchecked() })
     }
 }

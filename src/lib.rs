@@ -1,3 +1,7 @@
+#![no_std]
+
+extern crate alloc;
+
 mod boxed;
 #[cfg(feature = "cxx")]
 mod c;
@@ -18,9 +22,9 @@ pub use str::{BoxedStr, StrRef};
 pub type Array<T, const N: usize> = [T; N];
 
 unsafe fn into_static<T: ?Sized>(value: &T) -> &'static T {
-    unsafe { std::mem::transmute(value) }
+    unsafe { core::mem::transmute(value) }
 }
 
 unsafe fn into_static_mut<T: ?Sized>(value: &mut T) -> &'static mut T {
-    unsafe { std::mem::transmute(value) }
+    unsafe { core::mem::transmute(value) }
 }

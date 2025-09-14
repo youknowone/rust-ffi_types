@@ -24,7 +24,7 @@ static_assertions::assert_eq_size!(MutSliceRef<u8>, &[u8]);
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct BoxedSlice<T: 'static>(pub(crate) SliceInner<T>);
-static_assertions::assert_eq_size!(BoxedSlice<u8>, Box<[u8]>);
+static_assertions::assert_eq_size!(BoxedSlice<u8>, alloc::boxed::Box<[u8]>);
 
 impl<T> Clone for SliceRef<T> {
     #[inline(always)]
@@ -75,21 +75,21 @@ impl<T> From<SliceRef<T>> for &'static [T] {
     }
 }
 
-impl<T> std::convert::AsRef<[T]> for SliceRef<T> {
+impl<T> core::convert::AsRef<[T]> for SliceRef<T> {
     #[inline(always)]
     fn as_ref(&self) -> &[T] {
         self.into_slice()
     }
 }
 
-impl<T> std::borrow::Borrow<[T]> for SliceRef<T> {
+impl<T> core::borrow::Borrow<[T]> for SliceRef<T> {
     #[inline(always)]
     fn borrow(&self) -> &[T] {
         self.as_ref()
     }
 }
 
-impl<T> std::ops::Deref for SliceRef<T> {
+impl<T> core::ops::Deref for SliceRef<T> {
     type Target = [T];
 
     #[inline(always)]
@@ -138,7 +138,7 @@ impl<T> From<MutSliceRef<T>> for &'static mut [T] {
     }
 }
 
-impl<T> std::convert::AsRef<[T]> for MutSliceRef<T> {
+impl<T> core::convert::AsRef<[T]> for MutSliceRef<T> {
     #[inline(always)]
     fn as_ref(&self) -> &[T] {
         let union = self.0.union();
@@ -146,7 +146,7 @@ impl<T> std::convert::AsRef<[T]> for MutSliceRef<T> {
     }
 }
 
-impl<T> std::convert::AsMut<[T]> for MutSliceRef<T> {
+impl<T> core::convert::AsMut<[T]> for MutSliceRef<T> {
     #[inline(always)]
     fn as_mut(&mut self) -> &mut [T] {
         let union = self.0.union();
@@ -154,21 +154,21 @@ impl<T> std::convert::AsMut<[T]> for MutSliceRef<T> {
     }
 }
 
-impl<T> std::borrow::Borrow<[T]> for MutSliceRef<T> {
+impl<T> core::borrow::Borrow<[T]> for MutSliceRef<T> {
     #[inline(always)]
     fn borrow(&self) -> &[T] {
         self.as_ref()
     }
 }
 
-impl<T> std::borrow::BorrowMut<[T]> for MutSliceRef<T> {
+impl<T> core::borrow::BorrowMut<[T]> for MutSliceRef<T> {
     #[inline(always)]
     fn borrow_mut(&mut self) -> &mut [T] {
         self.as_mut()
     }
 }
 
-impl<T> std::ops::Deref for MutSliceRef<T> {
+impl<T> core::ops::Deref for MutSliceRef<T> {
     type Target = [T];
 
     #[inline(always)]
@@ -177,7 +177,7 @@ impl<T> std::ops::Deref for MutSliceRef<T> {
     }
 }
 
-impl<T> std::ops::DerefMut for MutSliceRef<T> {
+impl<T> core::ops::DerefMut for MutSliceRef<T> {
     #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.as_mut()
@@ -188,7 +188,8 @@ impl<T> Drop for BoxedSlice<T> {
     #[inline(always)]
     fn drop(&mut self) {
         let union: SliceUnion<'_, _> = self.0.union();
-        let boxed: Box<[T]> = std::mem::ManuallyDrop::into_inner(unsafe { union.boxed });
+        let boxed: alloc::boxed::Box<[T]> =
+            core::mem::ManuallyDrop::into_inner(unsafe { union.boxed });
         drop(boxed);
     }
 }
@@ -196,9 +197,9 @@ impl<T> Drop for BoxedSlice<T> {
 impl<T> BoxedSlice<T> {
     /// Create a new wrapper for a boxed slice `Box<[T]>`.
     #[inline(always)]
-    pub fn new(boxed: std::boxed::Box<[T]>) -> Self {
+    pub fn new(boxed: alloc::boxed::Box<[T]>) -> Self {
         let inner = SliceInner::from_slice(boxed.as_ref());
-        let raw = Box::into_raw(boxed);
+        let raw = alloc::boxed::Box::into_raw(boxed);
         assert_eq!(inner.ptr, raw as *mut _);
         Self(inner)
     }
@@ -210,27 +211,27 @@ impl<T> BoxedSlice<T> {
 
     /// Inverse of [`BoxedSlice::new`].
     #[inline(always)]
-    pub fn into_boxed_slice(self) -> std::boxed::Box<[T]> {
+    pub fn into_boxed_slice(self) -> alloc::boxed::Box<[T]> {
         let union = self.0.union();
-        std::mem::ManuallyDrop::into_inner(unsafe { union.boxed })
+        core::mem::ManuallyDrop::into_inner(unsafe { union.boxed })
     }
 }
 
-impl<T> From<std::boxed::Box<[T]>> for BoxedSlice<T> {
+impl<T> From<alloc::boxed::Box<[T]>> for BoxedSlice<T> {
     #[inline]
-    fn from(value: std::boxed::Box<[T]>) -> Self {
+    fn from(value: alloc::boxed::Box<[T]>) -> Self {
         Self::new(value)
     }
 }
 
-impl<T> From<BoxedSlice<T>> for std::boxed::Box<[T]> {
+impl<T> From<BoxedSlice<T>> for alloc::boxed::Box<[T]> {
     #[inline(always)]
     fn from(value: BoxedSlice<T>) -> Self {
         value.into_boxed_slice()
     }
 }
 
-impl<T> std::convert::AsRef<[T]> for BoxedSlice<T> {
+impl<T> core::convert::AsRef<[T]> for BoxedSlice<T> {
     #[inline(always)]
     fn as_ref(&self) -> &[T] {
         let union = self.0.union();
@@ -238,7 +239,7 @@ impl<T> std::convert::AsRef<[T]> for BoxedSlice<T> {
     }
 }
 
-impl<T> std::convert::AsMut<[T]> for BoxedSlice<T> {
+impl<T> core::convert::AsMut<[T]> for BoxedSlice<T> {
     #[inline(always)]
     fn as_mut(&mut self) -> &mut [T] {
         let union = self.0.union();
@@ -246,35 +247,35 @@ impl<T> std::convert::AsMut<[T]> for BoxedSlice<T> {
     }
 }
 
-impl<T> std::convert::AsRef<Box<[T]>> for BoxedSlice<T> {
+impl<T> core::convert::AsRef<alloc::boxed::Box<[T]>> for BoxedSlice<T> {
     #[inline(always)]
-    fn as_ref(&self) -> &Box<[T]> {
-        unsafe { &*(&self.0 as *const SliceInner<T> as *const Box<[T]>) }
+    fn as_ref(&self) -> &alloc::boxed::Box<[T]> {
+        unsafe { &*(&self.0 as *const SliceInner<T> as *const alloc::boxed::Box<[T]>) }
     }
 }
 
-impl<T> std::convert::AsMut<Box<[T]>> for BoxedSlice<T> {
+impl<T> core::convert::AsMut<alloc::boxed::Box<[T]>> for BoxedSlice<T> {
     #[inline(always)]
-    fn as_mut(&mut self) -> &mut Box<[T]> {
-        unsafe { &mut *(&mut self.0 as *mut SliceInner<T> as *mut Box<[T]>) }
+    fn as_mut(&mut self) -> &mut alloc::boxed::Box<[T]> {
+        unsafe { &mut *(&mut self.0 as *mut SliceInner<T> as *mut alloc::boxed::Box<[T]>) }
     }
 }
 
-impl<T> std::borrow::Borrow<[T]> for BoxedSlice<T> {
+impl<T> core::borrow::Borrow<[T]> for BoxedSlice<T> {
     #[inline(always)]
     fn borrow(&self) -> &[T] {
         self.as_ref()
     }
 }
 
-impl<T> std::borrow::BorrowMut<[T]> for BoxedSlice<T> {
+impl<T> core::borrow::BorrowMut<[T]> for BoxedSlice<T> {
     #[inline(always)]
     fn borrow_mut(&mut self) -> &mut [T] {
         self.as_mut()
     }
 }
 
-impl<T> std::ops::Deref for BoxedSlice<T> {
+impl<T> core::ops::Deref for BoxedSlice<T> {
     type Target = [T];
 
     #[inline(always)]
@@ -283,7 +284,7 @@ impl<T> std::ops::Deref for BoxedSlice<T> {
     }
 }
 
-impl<T> std::ops::DerefMut for BoxedSlice<T> {
+impl<T> core::ops::DerefMut for BoxedSlice<T> {
     #[inline(always)]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.as_mut()
@@ -306,12 +307,12 @@ impl<T> Clone for SliceInner<T> {
 
 impl<T> Copy for SliceInner<T> {}
 
-impl<T> std::fmt::Debug for SliceInner<T>
+impl<T> core::fmt::Debug for SliceInner<T>
 where
-    T: std::fmt::Debug + 'static,
+    T: core::fmt::Debug + 'static,
 {
     #[inline(always)]
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         unsafe { self.union().slice.fmt(f) }
     }
 }
@@ -342,6 +343,6 @@ union SliceUnion<'a, T> {
     inner: SliceInner<T>,
     slice: &'a [T],
     mut_slice: &'a mut [T],
-    boxed: std::mem::ManuallyDrop<std::boxed::Box<[T]>>,
+    boxed: core::mem::ManuallyDrop<alloc::boxed::Box<[T]>>,
 }
 static_assertions::assert_eq_size!(SliceInner<u8>, SliceUnion<u8>);
