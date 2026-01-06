@@ -36,3 +36,13 @@ __build_header = ["cbindgen", "cc"]  # This is not a user feature
 [lib]
 name = "ffi_types"
 crate-type = ["staticlib", "rlib"]
+
+[workspace.lints.clippy]
+alloc_instead_of_core = "warn"
+std_instead_of_alloc = "warn"
+std_instead_of_core = "warn"
+perf = "warn"
+style = "warn"
+complexity = "warn"
+suspicious = "warn"
+correctness = "warn"
