@@ -103,7 +103,7 @@ struct OptionBox {
 
     // constructors
     OptionBox() = delete;
-    OptionBox(OptionBox&) = delete;
+    OptionBox(const OptionBox&) = delete;
     OptionBox(OptionBox&& b) noexcept : _ptr(b.release()) {}
     explicit OptionBox(std::nullptr_t) noexcept : _ptr(nullptr) {}
 
@@ -285,7 +285,7 @@ struct DynRef {
 
     // only copy constructors
     DynRef() = delete;
-    DynRef(DynRef&) = default;
+    DynRef(const DynRef&) = default;
     DynRef(DynRef&&) = default;
 };
 
@@ -300,7 +300,7 @@ struct MutDynRef {
 
     // only move constructors
     MutDynRef() = delete;
-    MutDynRef(MutDynRef&) = delete;
+    MutDynRef(const MutDynRef&) = delete;
     MutDynRef(MutDynRef&&) = default;
 };
 
@@ -314,7 +314,7 @@ struct DynOwned {
 
     // no constructor no destructor
     DynOwned() = delete;
-    DynOwned(DynOwned&) = delete;
+    DynOwned(const DynOwned&) = delete;
     DynOwned(DynOwned&&) = delete;
     ~DynOwned() = delete;
 };
@@ -997,7 +997,7 @@ static_assert(std::is_standard_layout<CStrRef>::value);
 class BoxedStr : public StrRef {
 public:
     BoxedStr() = delete;
-    BoxedStr(BoxedStr&) = delete;
+    BoxedStr(const BoxedStr&) = delete;
     BoxedStr(BoxedStr&& s) noexcept : StrRef(s) {
         s._data = EMPTY_SLICE_BEGIN(const char);
         s._size = 0;
