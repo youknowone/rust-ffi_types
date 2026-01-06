@@ -675,7 +675,7 @@ static_assert(std::is_standard_layout<CStrRef>::value);
 class BoxedStr : public StrRef {
 public:
     BoxedStr() = delete;
-    BoxedStr(BoxedStr&) = delete;
+    BoxedStr(const BoxedStr&) = delete;
     BoxedStr(BoxedStr&& s) noexcept : StrRef(s) {
         s._data = EMPTY_SLICE_BEGIN(const char);
         s._size = 0;

@@ -18,7 +18,7 @@ struct OptionBox {
 
     // constructors
     OptionBox() = delete;
-    OptionBox(OptionBox&) = delete;
+    OptionBox(const OptionBox&) = delete;
     OptionBox(OptionBox&& b) noexcept : _ptr(b.release()) {}
     explicit OptionBox(std::nullptr_t) noexcept : _ptr(nullptr) {}
 
@@ -200,7 +200,7 @@ struct DynRef {
 
     // only copy constructors
     DynRef() = delete;
-    DynRef(DynRef&) = default;
+    DynRef(const DynRef&) = default;
     DynRef(DynRef&&) = default;
 };
 
@@ -215,7 +215,7 @@ struct MutDynRef {
 
     // only move constructors
     MutDynRef() = delete;
-    MutDynRef(MutDynRef&) = delete;
+    MutDynRef(const MutDynRef&) = delete;
     MutDynRef(MutDynRef&&) = default;
 };
 
@@ -229,7 +229,7 @@ struct DynOwned {
 
     // no constructor no destructor
     DynOwned() = delete;
-    DynOwned(DynOwned&) = delete;
+    DynOwned(const DynOwned&) = delete;
     DynOwned(DynOwned&&) = delete;
     ~DynOwned() = delete;
 };
