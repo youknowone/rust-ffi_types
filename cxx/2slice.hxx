@@ -358,6 +358,7 @@ public:
     }
 
     void _drop() noexcept;
+    // Implement specialization when T is not u8
     [[nodiscard]] BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
@@ -698,7 +699,7 @@ public:
     void _drop() noexcept;
     [[nodiscard]] BoxedStr clone() const noexcept;
 
-    const CBoxedStr& as_c() const noexcept {
+    [[nodiscard]] const CBoxedStr& as_c() const noexcept {
         return *reinterpret_cast<const CBoxedStr*>(this);
     }
 
