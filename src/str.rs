@@ -112,6 +112,20 @@ impl BoxedStr {
         let union = self.0.str_union();
         core::mem::ManuallyDrop::into_inner(unsafe { union.boxed })
     }
+
+    /// Clone the boxed string by allocating a new copy.
+    #[inline(always)]
+    pub fn clone_boxed(&self) -> Self {
+        let s: &str = self.as_ref();
+        Self::new(s.into())
+    }
+}
+
+impl Clone for BoxedStr {
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        self.clone_boxed()
+    }
 }
 
 impl From<alloc::boxed::Box<str>> for BoxedStr {

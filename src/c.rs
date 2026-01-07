@@ -90,7 +90,19 @@ pub mod ffi {
     pub unsafe extern "C" fn boxed_str_drop(_string: CBoxedStr) {}
 
     #[unsafe(export_name = "_rust_ffi_boxed_bytes_drop")]
-    pub unsafe extern "C" fn boxed_bytes_drop(_slice: CBoxedSlice<u8>) {}
+    pub unsafe extern "C" fn boxed_bytes_drop(_slice: CBoxedByteSlice) {}
+
+    /// Clone a BoxedStr by allocating a new copy.
+    #[unsafe(export_name = "_rust_ffi_boxed_str_clone")]
+    pub unsafe extern "C" fn boxed_str_clone(string: &CBoxedStr) -> CBoxedStr {
+        string.clone()
+    }
+
+    /// Clone a BoxedSlice<u8> by allocating a new copy.
+    #[unsafe(export_name = "_rust_ffi_boxed_bytes_clone")]
+    pub unsafe extern "C" fn boxed_bytes_clone(slice: &CBoxedByteSlice) -> CBoxedByteSlice {
+        slice.clone()
+    }
 }
 
 #[test]
