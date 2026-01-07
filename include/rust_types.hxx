@@ -680,7 +680,7 @@ public:
     }
 
     void _drop() noexcept;
-    // clone is only implemented for BoxedSlice<uint8_t> (other specializations will cause a linker error)
+    // Implement specialization when T is not u8
     [[nodiscard]] BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
