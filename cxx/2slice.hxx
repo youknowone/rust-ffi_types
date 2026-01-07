@@ -358,7 +358,7 @@ public:
     }
 
     void _drop() noexcept;
-    BoxedSlice<T> clone() const noexcept;
+    [[nodiscard]] BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
     const CBoxedSlice<T>& as_c() const noexcept {
