@@ -18,5 +18,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build
       run: cargo build --features __build_header --verbose
+    - name: Check generated headers are up-to-date
+      run: git diff --exit-code -- cxx/ include/ || (echo "::error::Generated headers are out of date. Run 'cargo build --features __build_header' and commit the changes." && exit 1)
     - name: Run tests
       run: cargo test --verbose
