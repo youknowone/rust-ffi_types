@@ -696,7 +696,7 @@ public:
     }
 
     void _drop() noexcept;
-    BoxedStr clone() const noexcept;
+    [[nodiscard]] BoxedStr clone() const noexcept;
 
     const CBoxedStr& as_c() const noexcept {
         return *reinterpret_cast<const CBoxedStr*>(this);
