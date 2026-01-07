@@ -59,6 +59,7 @@ template <typename T>
 struct CSliceRef;
 template <typename T>
 struct CBoxedSlice;
+struct CBoxedStr;
 
 /// A minimal range type of slices to be compatible with internal ranges.
 template <typename T>
@@ -357,6 +358,7 @@ public:
     }
 
     void _drop() noexcept;
+    BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
     const CBoxedSlice<T>& as_c() const noexcept {
@@ -694,6 +696,11 @@ public:
     }
 
     void _drop() noexcept;
+    BoxedStr clone() const noexcept;
+
+    const CBoxedStr& as_c() const noexcept {
+        return *reinterpret_cast<const CBoxedStr*>(this);
+    }
 
     void reset(_SliceRange<const char> s) noexcept {
         if (this->_size > 0) {

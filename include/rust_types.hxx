@@ -381,6 +381,7 @@ template <typename T>
 struct CSliceRef;
 template <typename T>
 struct CBoxedSlice;
+struct CBoxedStr;
 
 /// A minimal range type of slices to be compatible with internal ranges.
 template <typename T>
@@ -679,6 +680,7 @@ public:
     }
 
     void _drop() noexcept;
+    BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
     const CBoxedSlice<T>& as_c() const noexcept {
@@ -1016,6 +1018,11 @@ public:
     }
 
     void _drop() noexcept;
+    BoxedStr clone() const noexcept;
+
+    const CBoxedStr& as_c() const noexcept {
+        return *reinterpret_cast<const CBoxedStr*>(this);
+    }
 
     void reset(_SliceRange<const char> s) noexcept {
         if (this->_size > 0) {
@@ -1145,7 +1152,13 @@ extern "C" {
 
 void _rust_ffi_boxed_str_drop(ffi_types::CBoxedStr _string);
 
-void _rust_ffi_boxed_bytes_drop(ffi_types::CBoxedSlice<uint8_t> _slice);
+void _rust_ffi_boxed_bytes_drop(ffi_types::CBoxedByteSlice _slice);
+
+/// Clone a BoxedStr by allocating a new copy.
+ffi_types::CBoxedStr _rust_ffi_boxed_str_clone(const ffi_types::CBoxedStr *string);
+
+/// Clone a BoxedSlice<u8> by allocating a new copy.
+ffi_types::CBoxedByteSlice _rust_ffi_boxed_bytes_clone(const ffi_types::CBoxedByteSlice *slice);
 
 }  // extern "C"
 
@@ -1158,7 +1171,16 @@ inline void BoxedStr::_drop() noexcept {
 
 template <>
 inline void BoxedSlice<uint8_t>::_drop() noexcept {
-    ffi_types::_rust_ffi_boxed_bytes_drop(CBoxedSlice<uint8_t>::from(std::move(*this)));
+    ffi_types::_rust_ffi_boxed_bytes_drop(CBoxedByteSlice::from(std::move(*this)));
+}
+
+inline BoxedStr BoxedStr::clone() const noexcept {
+    return ffi_types::_rust_ffi_boxed_str_clone(&this->as_c())();
+}
+
+template <>
+inline BoxedSlice<uint8_t> BoxedSlice<uint8_t>::clone() const noexcept {
+    return ffi_types::_rust_ffi_boxed_bytes_clone(reinterpret_cast<const CBoxedByteSlice*>(this))();
 }
 
 }  // namespace ffi_types

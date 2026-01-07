@@ -217,6 +217,22 @@ impl<T> BoxedSlice<T> {
     }
 }
 
+impl<T: Clone> BoxedSlice<T> {
+    /// Clone the boxed slice by allocating a new copy.
+    #[inline(always)]
+    pub fn clone_boxed(&self) -> Self {
+        let slice: &[T] = self.as_ref();
+        Self::new(slice.into())
+    }
+}
+
+impl<T: Clone> Clone for BoxedSlice<T> {
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        self.clone_boxed()
+    }
+}
+
 impl<T> From<alloc::boxed::Box<[T]>> for BoxedSlice<T> {
     #[inline]
     fn from(value: alloc::boxed::Box<[T]>) -> Self {
