@@ -1180,7 +1180,7 @@ inline void BoxedSlice<uint8_t>::_drop() noexcept {
 }
 
 template <>
-[[nodiscard]] inline BoxedSlice<uint8_t> BoxedSlice<uint8_t>::clone() const noexcept {
+inline BoxedSlice<uint8_t> BoxedSlice<uint8_t>::clone() const noexcept {
     return ffi_types::_rust_ffi_boxed_bytes_clone(reinterpret_cast<const CBoxedByteSlice*>(this))();
 }
 
