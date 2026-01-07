@@ -680,7 +680,8 @@ public:
     }
 
     void _drop() noexcept;
-    BoxedSlice<T> clone() const noexcept;
+    // clone is only implemented for BoxedSlice<uint8_t> (other specializations will cause a linker error)
+    [[nodiscard]] BoxedSlice<T> clone() const noexcept;
 
     CBoxedSlice<T> into() noexcept;
     const CBoxedSlice<T>& as_c() const noexcept {
@@ -1018,9 +1019,9 @@ public:
     }
 
     void _drop() noexcept;
-    BoxedStr clone() const noexcept;
+    [[nodiscard]] BoxedStr clone() const noexcept;
 
-    const CBoxedStr& as_c() const noexcept {
+    [[nodiscard]] const CBoxedStr& as_c() const noexcept {
         return *reinterpret_cast<const CBoxedStr*>(this);
     }
 
@@ -1174,12 +1175,12 @@ inline void BoxedSlice<uint8_t>::_drop() noexcept {
     ffi_types::_rust_ffi_boxed_bytes_drop(CBoxedByteSlice::from(std::move(*this)));
 }
 
-inline BoxedStr BoxedStr::clone() const noexcept {
+[[nodiscard]] inline BoxedStr BoxedStr::clone() const noexcept {
     return ffi_types::_rust_ffi_boxed_str_clone(&this->as_c())();
 }
 
 template <>
-inline BoxedSlice<uint8_t> BoxedSlice<uint8_t>::clone() const noexcept {
+[[nodiscard]] inline BoxedSlice<uint8_t> BoxedSlice<uint8_t>::clone() const noexcept {
     return ffi_types::_rust_ffi_boxed_bytes_clone(reinterpret_cast<const CBoxedByteSlice*>(this))();
 }
 
