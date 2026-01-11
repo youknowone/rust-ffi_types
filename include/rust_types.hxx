@@ -532,6 +532,16 @@ struct SliceRef : public MutSliceRef<const T> {
     static std::enable_if_t<std::is_same_v<U, uint8_t>, SliceRef<uint8_t>> from_buffer(const B& buffer) noexcept {
         return SliceRef<uint8_t>(reinterpret_cast<const uint8_t*>(&buffer), sizeof(B));
     }
+
+    // operator== for element-wise comparison
+    bool operator==(const SliceRef& other) const noexcept {
+        if (this->size() != other.size()) return false;
+        return std::equal(this->begin(), this->end(), other.begin());
+    }
+
+    bool operator!=(const SliceRef& other) const noexcept {
+        return !(*this == other);
+    }
 };
 static_assert(std::is_trivially_copyable<SliceRef<usize>>::value);
 static_assert(std::is_standard_layout<SliceRef<usize>>::value);
