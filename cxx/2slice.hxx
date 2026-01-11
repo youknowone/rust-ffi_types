@@ -624,6 +624,24 @@ struct CharStrRef {
     std::string to_string() const noexcept {
         return std::string(this->view());
     }
+
+    // operator== for string comparison
+    bool operator==(std::string_view other) const noexcept {
+        return this->view() == other;
+    }
+
+    bool operator==(const CharStrRef& other) const noexcept {
+        return this->view() == other.view();
+    }
+
+    // operator!= for < C++20
+    bool operator!=(std::string_view other) const noexcept {
+        return !(*this == other);
+    }
+
+    bool operator!=(const CharStrRef& other) const noexcept {
+        return !(*this == other);
+    }
 #endif
 };
 static_assert(sizeof(SliceRef<char>) == sizeof(CharStrRef));
