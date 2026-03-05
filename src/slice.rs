@@ -337,7 +337,7 @@ impl<T> SliceInner<T> {
     #[inline(always)]
     pub(crate) const fn empty() -> Self {
         Self {
-            ptr: 1 as _,
+            ptr: core::mem::align_of::<T>() as _,
             len: 0,
         }
     }

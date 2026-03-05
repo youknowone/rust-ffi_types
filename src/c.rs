@@ -128,10 +128,26 @@ fn test_empty_char_str() {
 
     let empty = CharStrRef {
         0: SliceInner {
-            ptr: 1 as _,
+            ptr: core::mem::align_of::<c_char>() as _,
             len: 0,
         },
     };
     let bytes = empty.as_bytes();
     assert_eq!(bytes, b"");
+}
+
+#[test]
+fn test_empty_slice_alignment() {
+    // ensure empty slice dangling pointer respects alignment of T
+    let empty_u8 = CBoxedSlice::<u8>::empty();
+    assert_eq!(empty_u8.0.ptr as usize, core::mem::align_of::<u8>());
+    core::mem::forget(empty_u8);
+
+    let empty_u32 = CBoxedSlice::<u32>::empty();
+    assert_eq!(empty_u32.0.ptr as usize, core::mem::align_of::<u32>());
+    core::mem::forget(empty_u32);
+
+    let empty_u64 = CBoxedSlice::<u64>::empty();
+    assert_eq!(empty_u64.0.ptr as usize, core::mem::align_of::<u64>());
+    core::mem::forget(empty_u64);
 }
