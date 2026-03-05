@@ -1,10 +1,10 @@
 namespace ffi_types {
 
-#define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(1)
+#define EMPTY_SLICE_BEGIN(T) reinterpret_cast<T*>(alignof(T))
 
 template <typename T>
 T* _wrap_null(T* ptr) {
-    return ptr ? ptr : reinterpret_cast<T*>(1);
+    return ptr ? ptr : reinterpret_cast<T*>(alignof(std::remove_const_t<T>));
 }
 
 // C++ std::ranges compatibility layer until C++17.
